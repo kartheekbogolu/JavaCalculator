@@ -7,14 +7,16 @@ WORKDIR /usr/local/tomcat/webapps/
 # Remove the default Tomcat webapps
 RUN rm -rf ROOT* examples* host-manager* manager*
 
-# Clone the GitHub repository into the container
-RUN apt-get update && apt-get install -y git \
-    && git clone https://github.com/kartheekbogolu/JavaCalculator.git \
-    && rm -rf JavaCalculator/.git \
-    && mv JavaCalculator/ROOT.war ./ROOT.war
+# Clone the JavaCalculator GitHub repository into the container
+RUN apt-get update && apt-get install -y git
+RUN git clone https://github.com/kartheekbogolu/JavaCalculator.git ./ROOT
 
-# Expose the port that the Tomcat server is running on
-EXPOSE 8080
+# Build the JavaCalculator project using Maven
+RUN apt-get update && apt-get install -y maven
+RUN mvn -f ./ROOT clean package
+
+# Expose the port that the Tomcat server is running on (change port number to 8081)
+EXPOSE 8081
 
 # Start Tomcat server when the container launches
 CMD ["catalina.sh", "run"]
